@@ -40,6 +40,7 @@ impl Actor for WebSocket {
 
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
   fn handle(&mut self, message: Result<ws::Message, ws::ProtocolError>, context: &mut Self::Context) {
+    println!("WS {:?}", message);
     match message {
       Ok(ws::Message::Ping(message)) => {
         self.heartbeat = Instant::now();
@@ -64,7 +65,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WebSocket {
 }
 
 async fn ws_index(request: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
-  ws::start(WebSocket::new(), &request, stream)
+  let response = ws::start(WebSocket::new(), &request, stream);
+  println!("{:?}", response);
+  response
 }
 
 #[actix_rt::main]
